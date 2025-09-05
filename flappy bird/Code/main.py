@@ -19,6 +19,7 @@ class Game:
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.collison_sprites = pygame.sprite.Group()
         self.pipe_sprites = pygame.sprite.Group()
+        self.score_sprite = pygame.sprite.Group()
         self.gameover = False
 
         self.running = True
@@ -33,8 +34,8 @@ class Game:
         #* Sprite layering issue fixed itself idk how
         #~ Birb
         self.player = PeskyBird(self.all_sprites)
-        #~ font
-        self.score = Score(self.all_sprites)
+        #~ Score
+        self.score = Score((self.all_sprites, self.score_sprite))
 
         #* Audio load
         self.death_sound = pygame.mixer.Sound(join('audio', 'hit.wav'))
@@ -67,7 +68,7 @@ class Game:
             sprite.kill()
         
         #* The following 3 lines feel like trash code
-        for sprite in self.all_sprites: #? The only way i could find to remove gameover when gamestarts 😭😭
+        for sprite in self.all_sprites: #? The only way i could find to remove gameoverUI when gamestarts 😭😭
             if hasattr(sprite, 'gameover_attr'):
                 sprite.kill()
         self.gameover = False
@@ -94,10 +95,11 @@ class Game:
 
             #* Update
             if not self.gameover:
-                self.all_sprites.update(dt)  
+                self.all_sprites.update(dt) 
                 self.collisions()
             if self.gameover:
                 self.gameoverUI = GameOverUI(self.score.value, (self.all_sprites))
+            self.score_sprite.update(dt) #? to update score even when you crash as you score
 
             #* Draw
             self.all_sprites.draw(self.display_surface)
